@@ -12,6 +12,8 @@ origins = [
     "http://localhost:3000",
     "http://localhost:5173", # Vite default
     "http://127.0.0.1:5173",
+    "https://ahlya-investigations.vercel.app",  # frontend prod
+    "https://ahlya-production.up.railway.app", # backend prod
 ]
 
 app.add_middleware(
