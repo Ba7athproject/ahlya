@@ -2,8 +2,9 @@
 import React, { useState, useEffect } from 'react';
 import ManualEnrichmentWizard from '../components/ManualEnrichmentWizard';
 import WatchlistView from '../components/WatchlistView';
+import { API_BASE_URL } from '../services/config';
 
-const API_BASE = 'http://localhost:8000/api/v1/enrichment';
+const API_BASE = `${API_BASE_URL}/enrichment`;
 
 // --- Helper Components ---
 
@@ -242,8 +243,8 @@ const EnrichedCompaniesPage = ({ onViewProfile }) => {
                         <button
                             onClick={() => setActiveTab('enriched')}
                             className={`px-4 py-2 text-sm font-medium rounded-md transition-colors ${activeTab === 'enriched'
-                                    ? 'bg-blue-50 text-blue-700 shadow-sm'
-                                    : 'text-gray-500 hover:text-gray-700'
+                                ? 'bg-blue-50 text-blue-700 shadow-sm'
+                                : 'text-gray-500 hover:text-gray-700'
                                 }`}
                         >
                             الشركات المُثرَاة
@@ -251,8 +252,8 @@ const EnrichedCompaniesPage = ({ onViewProfile }) => {
                         <button
                             onClick={() => setActiveTab('watchlist')}
                             className={`px-4 py-2 text-sm font-medium rounded-md transition-colors ${activeTab === 'watchlist'
-                                    ? 'bg-indigo-50 text-indigo-700 shadow-sm'
-                                    : 'text-gray-500 hover:text-gray-700'
+                                ? 'bg-indigo-50 text-indigo-700 shadow-sm'
+                                : 'text-gray-500 hover:text-gray-700'
                                 }`}
                         >
                             سجل الشركات غير المسجلة

@@ -11,8 +11,9 @@ import {
     ExternalLink,
     Loader2
 } from 'lucide-react';
+import { API_BASE_URL } from '../services/config';
 
-const API_BASE = 'http://localhost:8000/api/v1/enrichment';
+const API_BASE = `${API_BASE_URL}/enrichment`;
 
 const WatchlistView = () => {
     const [companies, setCompanies] = useState([]);
