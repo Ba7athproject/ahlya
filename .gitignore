@@ -36,7 +36,7 @@ __pycache__/
 *.pyd
 
 # Bases et données locales
-*.db
+# *.db
 *.sqlite3
 instance/
 
