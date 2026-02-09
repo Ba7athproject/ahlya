@@ -1,0 +1,34 @@
+[
+    {
+        "id": "ins",
+        "name": "INS - إحصائيات جهوية",
+        "description": "البطالة، الفقر، التنمية",
+        "icon": "📊",
+        "url_template": "http://www.ins.tn/fr/recherche?query={wilaya}",
+        "color": "indigo"
+    },
+    {
+        "id": "onagri",
+        "name": "ONAGRI - الإنتاج الفلاحي",
+        "description": "الحبوب، الزياتين، المواشي",
+        "icon": "🚜",
+        "url_template": "http://www.onagri.nat.tn",
+        "color": "emerald"
+    },
+    {
+        "id": "crda",
+        "name": "CRDA - التنمية الفلاحية",
+        "description": "المشاريع، الأراضي الدولية",
+        "icon": "🌾",
+        "url_template": "https://www.google.com/search?q=CRDA+{wilaya}+site:gov.tn",
+        "color": "green"
+    },
+    {
+        "id": "data_gov",
+        "name": "Data.gov.tn - بيانات مفتوحة",
+        "description": "datasets عمومية",
+        "icon": "📂",
+        "url_template": "https://www.data.gov.tn/data/search?q={wilaya}",
+        "color": "purple"
+    }
+]
