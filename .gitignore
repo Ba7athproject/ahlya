@@ -21,3 +21,25 @@
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
+
+# --- Python backend / Ba7ath ---
+
+# Environnements virtuels
+venv/
+.env/
+.env.*
+
+# Bytecode / cache
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+
+# Bases et données locales
+*.db
+*.sqlite3
+instance/
+
+# Logs
+*.log
+logs/
