@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import WilayaDropdownSelector from './WilayaDropdownSelector';
 import ComparisonParametersFilter from './ComparisonParametersFilter';
 import StatisticalComparisonGrid from './StatisticalComparisonGrid';
+import { fetchNationalStats } from '../services/api';
 
 const ComparisonPanel = ({ isOpen, selectedWilayas, onClose, onWilayaAdd, onWilayaRemove }) => {
     // We can manage selected wilayas here or accept props. 
@@ -38,11 +39,7 @@ const ComparisonPanel = ({ isOpen, selectedWilayas, onClose, onWilayaAdd, onWila
     // but fetching here ensures Grid has it even if Selector implementation changes.
     // Given React 18+ automatic batching and browser caching, double fetch is low cost.
     React.useEffect(() => {
-        // We need to import fetchNationalStats if not imported.
-        // It resides in ../services/api
-        import('../services/api').then(({ fetchNationalStats }) => {
-            fetchNationalStats().then(setNationalStats).catch(console.error);
-        });
+        fetchNationalStats().then(setNationalStats).catch(console.error);
     }, []);
 
     return (
