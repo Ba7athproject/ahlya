@@ -3,6 +3,7 @@ import React, { useState, useEffect } from 'react';
 import ManualEnrichmentWizard from '../components/ManualEnrichmentWizard';
 import WatchlistView from '../components/WatchlistView';
 import { API_BASE_URL } from '../services/config';
+import { fetchEnrichedCompanies, fetchAllEnrichedWilayas } from '../services/api';
 
 const API_BASE = `${API_BASE_URL}/enrichment`;
 
@@ -184,15 +185,15 @@ const EnrichedCompaniesPage = ({ onViewProfile }) => {
         const fetchCompanies = async () => {
             setLoading(true);
             try {
-                const params = new URLSearchParams();
-                params.append('page', filters.page);
-                params.append('per_page', 12);
-                if (filters.search) params.append('search', filters.search);
-                if (filters.wilaya) params.append('wilaya', filters.wilaya);
-                if (filters.hasRedFlags !== '') params.append('has_red_flags', filters.hasRedFlags);
+                const params = {
+                    page: filters.page,
+                    per_page: 12
+                };
+                if (filters.search) params.search = filters.search;
+                if (filters.wilaya) params.wilaya = filters.wilaya;
+                if (filters.hasRedFlags !== '') params.has_red_flags = filters.hasRedFlags;
 
-                const response = await fetch(`${API_BASE}/list?${params.toString()}`);
-                const data = await response.json();
+                const data = await fetchEnrichedCompanies(params);
 
                 setCompanies(data.companies || []);
                 setPagination({
@@ -201,10 +202,21 @@ const EnrichedCompaniesPage = ({ onViewProfile }) => {
                 });
 
                 if (wilayas.length === 0 && data.companies.length > 0) {
-                    const allResponse = await fetch(`${API_BASE}/all`);
-                    const allData = await allResponse.json();
-                    const uniqueWilayas = [...new Set(allData.map(c => c.wilaya).filter(Boolean))];
-                    setWilayas(uniqueWilayas);
+                    const uniqueWilayas = await fetchAllEnrichedWilayas();
+                    // API returns list of strings directly now based on my implementation in backend usually, 
+                    // or list of objects? 
+                    // Wait, `fetchAllEnrichedWilayas` calls `/enrichment/all` which returns `List[CompanyResponse]`.
+                    // The original code did: `const uniqueWilayas = [...new Set(allData.map(c => c.wilaya).filter(Boolean))];`
+                    // My new `fetchAllEnrichedWilayas` returns response.json().
+                    // So I should keep the mapping logic if the endpoint returns companies.
+
+                    // Let's check `backend/app/api/enrichment.py`... I don't see it open.
+                    // But `fetchAllEnrichedWilayas` in `api.js` calls `/enrichment/all`.
+                    // EnrichedCompaniesPage.jsx original: `const allData = await allResponse.json();`
+                    // So `data` from `fetchAllEnrichedWilayas` IS `allData`.
+
+                    const unique = [...new Set(uniqueWilayas.map(c => c.wilaya).filter(Boolean))];
+                    setWilayas(unique);
                 }
             } catch (error) {
                 console.error('Error fetching enriched companies:', error);
