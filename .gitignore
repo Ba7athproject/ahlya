@@ -45,3 +45,4 @@ instance/
 logs/
 
 .vercel
+backend/.env 

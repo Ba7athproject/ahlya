@@ -35,6 +35,10 @@ import InvestigationWizard from "./components/InvestigationWizard";
 import EnrichedCompaniesPage from "./pages/EnrichedCompaniesPage";
 import EnrichedProfileModal from "./components/EnrichedProfileModal";
 import ManualEnrichmentWizard from "./components/ManualEnrichmentWizard";
+import { AuthProvider } from "./context/AuthContext";
+import LoginPage from "./pages/LoginPage";
+import ProtectedRoute from "./components/ProtectedRoute";
+import AdminDashboard from "./pages/AdminDashboard";
 
 ChartJS.register(
   CategoryScale,
@@ -608,360 +612,368 @@ function App() {
 
   return (
     <BrowserRouter>
-      <div dir="rtl" className="min-h-screen bg-slate-50 text-slate-900 font-sans selection:bg-emerald-200">
+      <AuthProvider>
+        <div dir="rtl" className="min-h-screen bg-slate-50 text-slate-900 font-sans selection:bg-emerald-200">
 
-        {/* Top Bar */}
-        <div className="h-1 bg-gradient-to-l from-emerald-500 via-sky-500 to-indigo-500"></div>
+          {/* Top Bar */}
+          <div className="h-1 bg-gradient-to-l from-emerald-500 via-sky-500 to-indigo-500"></div>
 
-        {/* Header */}
-        <header className="border-b border-slate-200 bg-white/90 backdrop-blur sticky top-0 z-40">
-          <div className="container mx-auto px-4 py-3 flex items-center justify-between">
-            <div className="flex items-center gap-4">
-              <div className="flex flex-col">
-                <h1 className="text-xl font-bold tracking-tight text-slate-900 flex items-center gap-2">
-                  <span className="w-3 h-3 bg-emerald-500 rounded-full animate-pulse shadow-[0_0_10px_rgba(16,185,129,0.5)]"></span>
-                  الشركات الأهلية
-                </h1>
-                <span className="text-xs text-slate-500 font-mono tracking-wider">OSINT DASHBOARD · BA7ATH</span>
+          {/* Header */}
+          <header className="border-b border-slate-200 bg-white/90 backdrop-blur sticky top-0 z-40">
+            <div className="container mx-auto px-4 py-3 flex items-center justify-between">
+              <div className="flex items-center gap-4">
+                <div className="flex flex-col">
+                  <h1 className="text-xl font-bold tracking-tight text-slate-900 flex items-center gap-2">
+                    <span className="w-3 h-3 bg-emerald-500 rounded-full animate-pulse shadow-[0_0_10px_rgba(16,185,129,0.5)]"></span>
+                    الشركات الأهلية
+                  </h1>
+                  <span className="text-xs text-slate-500 font-mono tracking-wider">OSINT DASHBOARD · BA7ATH</span>
+                </div>
+              </div>
+
+              {/* Navigation Menu */}
+              <nav className="flex items-center gap-2">
+                <Link
+                  to="/"
+                  className="px-3 py-1.5 text-sm font-medium text-slate-700 hover:text-emerald-600 hover:bg-emerald-50 rounded-lg transition-colors"
+                >
+                  🏠 الرئيسية
+                </Link>
+                <Link
+                  to="/enriched"
+                  className="px-3 py-1.5 text-sm font-medium text-white bg-gradient-to-r from-purple-500 to-indigo-600 hover:from-purple-600 hover:to-indigo-700 rounded-lg transition-all shadow-md"
+                >
+                  📂 ملفات التحقيق
+                </Link>
+              </nav>
+
+              <div className="flex items-center gap-3">
+                <button
+                  onClick={() => setInvestigationOpen(true)}
+                  className="hidden md:flex items-center gap-2 px-3 py-1.5 bg-gradient-to-r from-purple-500 to-indigo-600 text-white rounded-lg hover:from-purple-600 hover:to-indigo-700 shadow-md transition-all text-sm font-medium"
+                >
+                  <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" /></svg>
+                  <span>تحقيق</span>
+                </button>
+                <button
+                  onClick={() => setMethodologyOpen(true)}
+                  className="hidden md:flex items-center gap-2 px-3 py-1.5 bg-purple-100 text-purple-700 rounded-lg hover:bg-purple-200 transition-colors text-sm font-medium"
+                >
+                  <span>📚</span>
+                  <span>المنهجية</span>
+                </button>
+                <StatusBadge label="LIVE MONITORING" color="emerald" />
+                <span className="hidden md:inline text-xs text-slate-400 font-mono">{new Date().getFullYear()}</span>
               </div>
             </div>
+          </header>
 
-            {/* Navigation Menu */}
-            <nav className="flex items-center gap-2">
-              <Link
-                to="/"
-                className="px-3 py-1.5 text-sm font-medium text-slate-700 hover:text-emerald-600 hover:bg-emerald-50 rounded-lg transition-colors"
-              >
-                🏠 الرئيسية
-              </Link>
-              <Link
-                to="/enriched"
-                className="px-3 py-1.5 text-sm font-medium text-white bg-gradient-to-r from-purple-500 to-indigo-600 hover:from-purple-600 hover:to-indigo-700 rounded-lg transition-all shadow-md"
-              >
-                📂 ملفات التحقيق
-              </Link>
-            </nav>
+          <Routes>
+            <Route path="/login" element={<LoginPage />} />
+            <Route element={<ProtectedRoute />}>
+              {/* Home Route - Dashboard */}
+              <Route path="/" element={
+                <>
+                  <main className="container mx-auto px-4 py-8 space-y-8 animate-fadeIn">
 
-            <div className="flex items-center gap-3">
-              <button
-                onClick={() => setInvestigationOpen(true)}
-                className="hidden md:flex items-center gap-2 px-3 py-1.5 bg-gradient-to-r from-purple-500 to-indigo-600 text-white rounded-lg hover:from-purple-600 hover:to-indigo-700 shadow-md transition-all text-sm font-medium"
-              >
-                <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" /></svg>
-                <span>تحقيق</span>
-              </button>
-              <button
-                onClick={() => setMethodologyOpen(true)}
-                className="hidden md:flex items-center gap-2 px-3 py-1.5 bg-purple-100 text-purple-700 rounded-lg hover:bg-purple-200 transition-colors text-sm font-medium"
-              >
-                <span>📚</span>
-                <span>المنهجية</span>
-              </button>
-              <StatusBadge label="LIVE MONITORING" color="emerald" />
-              <span className="hidden md:inline text-xs text-slate-400 font-mono">{new Date().getFullYear()}</span>
-            </div>
-          </div>
-        </header>
-
-        <Routes>
-          {/* Home Route - Dashboard */}
-          <Route path="/" element={
-            <>
-              <main className="container mx-auto px-4 py-8 space-y-8 animate-fadeIn">
-
-                {/* Statistics Row */}
-                <section className="grid grid-cols-1 md:grid-cols-4 gap-4">
-                  <KPICard
-                    title="إجمالي الشركات"
-                    value={total}
-                    subtext="سجل وطني"
-                    color="emerald"
-                  />
-                  <KPICard
-                    title="نسبة الشركات المحلية"
-                    value={`${pctLocales}%`}
-                    subtext={`${locales} شركة محلية`}
-                    color="sky"
-                  />
-                  <KPICard
-                    title="متوسط مؤشر BA7ATH"
-                    value={nationalRiskIndex}
-                    subtext="معدل وطني (0-100)"
-                    color="amber"
-                  />
-                  <KPICard
-                    title="تنوع الأنشطة"
-                    value={Object.keys(nationalStats.top_activities || {}).length}
-                    subtext="أنشطة رئيسية"
-                    color="indigo"
-                  />
-                </section>
-
-                {/* Filter & Controls */}
-                <section className="bg-white border border-slate-200 rounded-xl p-4 flex flex-col md:flex-row items-center justify-between gap-4 shadow-sm">
-                  <div className="flex items-center gap-3 w-full md:w-auto">
-                    <span className="text-sm font-medium text-slate-600">نطاق التحليل:</span>
-                    <select
-                      className="bg-slate-50 border border-slate-300 text-slate-900 text-sm rounded-lg focus:ring-emerald-500 focus:border-emerald-500 block w-full md:w-64 p-2.5 transition-shadow"
-                      value={selectedWilaya}
-                      onChange={(e) => setSelectedWilaya(e.target.value)}
-                    >
-                      <option value="ALL">كل الولايات (وطني)</option>
-                      {Object.keys(nationalStats.wilayas || {}).sort().map((w) => (
-                        <option key={w} value={w}>{w}</option>
-                      ))}
-                    </select>
-                  </div>
-
-                  <div className="flex gap-2">
-                    {selectedWilaya !== "ALL" && (
-                      <button
-                        onClick={handleResetView}
-                        className="px-4 py-2.5 rounded-lg text-sm font-medium bg-slate-100 text-slate-600 hover:bg-slate-200 transition-colors"
-                      >
-                        مسح الفلتر
-                      </button>
-                    )}
-                    <button
-                      onClick={() => setOpenRegion(selectedWilaya)}
-                      disabled={selectedWilaya === "ALL"}
-                      className={`flex items-center gap-2 px-5 py-2.5 rounded-lg text-sm font-medium transition-all ${selectedWilaya === "ALL"
-                        ? "bg-slate-100 text-slate-400 cursor-not-allowed border border-slate-200"
-                        : "bg-emerald-600 text-white hover:bg-emerald-500 hover:shadow-lg hover:shadow-emerald-200/50 active:translate-y-0.5"
-                        }`}
-                    >
-                      <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 19a2 2 0 01-2-2V7a2 2 0 012-2h4l2 2h4a2 2 0 012 2v1M5 19h14a2 2 0 002-2v-5a2 2 0 00-2-2H9a2 2 0 00-2 2v5a2 2 0 01-2 2z" />
-                      </svg>
-                      فتح الملف الجهوي
-                    </button>
-                  </div>
-                </section>
-
-                {/* Visualization Grid */}
-                <section className="grid lg:grid-cols-12 gap-6 h-[600px] lg:h-[500px]">
-                  {/* Chart Section */}
-                  <div className="lg:col-span-7 bg-white border border-slate-200 rounded-2xl p-6 flex flex-col shadow-sm">
-                    <h3 className="text-lg font-semibold text-slate-800 mb-6 flex items-center gap-2">
-                      <svg className="w-5 h-5 text-emerald-500" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" /></svg>
-                      {chartConfig.title}
-                    </h3>
-                    <div className="flex-1 w-full relative">
-                      <Bar
-                        data={chartConfig.data}
-                        options={{
-                          responsive: true,
-                          maintainAspectRatio: false,
-                          plugins: { legend: { display: false } },
-                          scales: {
-                            x: { ticks: { color: "#64748b", font: { family: "sans-serif" } }, grid: { display: false } },
-                            y: { ticks: { color: "#64748b" }, grid: { color: "#e2e8f0" }, beginAtZero: true }
-                          },
-                          onClick: (e, els) => {
-                            if (els.length > 0) {
-                              const idx = els[0].index;
-                              const w = chartConfig.data.labels[idx];
-                              if (nationalStats.wilayas[w]) setSelectedWilaya(w);
-                            }
-                          }
-                        }}
+                    {/* Statistics Row */}
+                    <section className="grid grid-cols-1 md:grid-cols-4 gap-4">
+                      <KPICard
+                        title="إجمالي الشركات"
+                        value={total}
+                        subtext="سجل وطني"
+                        color="emerald"
                       />
-                    </div>
-                  </div>
-
-                  {/* Map Section */}
-                  <div className="lg:col-span-5 bg-white border border-slate-200 rounded-2xl p-1 overflow-hidden relative shadow-sm">
-                    <div className="absolute top-4 right-4 z-[400] bg-white/90 px-3 py-1 rounded text-xs text-slate-500 pointer-events-none border border-slate-200 shadow-sm">
-                      تفاعلي: اضغط على الولاية
-                    </div>
-                    <MapContainer
-                      center={TUNISIA_CENTER}
-                      zoom={6.5}
-                      className="w-full h-full rounded-xl bg-slate-100"
-                      zoomControl={true}
-                    >
-                      <TileLayer
-                        url="https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png"
-                        attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>'
+                      <KPICard
+                        title="نسبة الشركات المحلية"
+                        value={`${pctLocales}%`}
+                        subtext={`${locales} شركة محلية`}
+                        color="sky"
                       />
-                      <MapControls
-                        selectedWilaya={selectedWilaya}
-                        onReset={() => {
-                          setSelectedWilaya("ALL");
-                          setOpenRegion(null);
-                        }}
+                      <KPICard
+                        title="متوسط مؤشر BA7ATH"
+                        value={nationalRiskIndex}
+                        subtext="معدل وطني (0-100)"
+                        color="amber"
                       />
-                      {Object.entries(nationalStats.wilayas || {}).map(([wilaya, count]) => {
-                        const coords = WILAYAS_COORDS[wilaya];
-                        if (!coords) return null;
-                        const isSelected = wilaya === selectedWilaya;
-                        return (
-                          <CircleMarker
-                            key={wilaya}
-                            center={coords}
-                            radius={Math.sqrt(count) * 4}
-                            pathOptions={{
-                              color: isSelected ? "#2563EB" : "#10B981",
-                              fillColor: isSelected ? "#3B82F6" : "#10B981",
-                              fillOpacity: isSelected ? 0.8 : 0.4,
-                              weight: isSelected ? 2 : 0
-                            }}
-                            eventHandlers={{
-                              click: () => {
-                                setSelectedWilaya(wilaya);
-                                setOpenRegion(wilaya);
-                              },
-                            }}
-                          >
-                            <LeafletTooltip direction="top" offset={[0, -10]} opacity={1} className="custom-tooltip">
-                              <span className="font-bold">{wilaya}</span>: {count}
-                            </LeafletTooltip>
-                          </CircleMarker>
-                        );
-                      })}
-                    </MapContainer>
-                  </div>
-                </section>
+                      <KPICard
+                        title="تنوع الأنشطة"
+                        value={Object.keys(nationalStats.top_activities || {}).length}
+                        subtext="أنشطة رئيسية"
+                        color="indigo"
+                      />
+                    </section>
 
-                {/* National Stats Grid */}
-                <section>
-                  <div className="flex items-center gap-3 mb-4">
-                    <h2 className="text-xl font-bold text-slate-800">القطاعات الاقتصادية الكبرى</h2>
-                    <div className="h-px flex-1 bg-slate-200"></div>
-                  </div>
-
-                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-                    {nationalTopGroups.map(([code, value]) => (
-                      <div key={code} className="bg-white border border-slate-200 rounded-lg p-4 hover:border-emerald-200 hover:shadow-md transition-all group shadow-sm">
-                        <div className="flex justify-between items-start mb-2">
-                          <div className={`p-2 rounded-lg bg-${code === "AGRI_NATUREL" ? "emerald" : "slate"}-100`}>
-                            <span className="w-2 h-2 block rounded-full" style={{ backgroundColor: getActivityColor(code) }}></span>
-                          </div>
-                          <span className="text-2xl font-bold text-slate-800 group-hover:text-emerald-600 transition-colors">{value}</span>
-                        </div>
-                        <h4 className="text-sm font-medium text-slate-500 line-clamp-2 min-h-[40px]">
-                          {getGroupLabel(code)}
-                        </h4>
+                    {/* Filter & Controls */}
+                    <section className="bg-white border border-slate-200 rounded-xl p-4 flex flex-col md:flex-row items-center justify-between gap-4 shadow-sm">
+                      <div className="flex items-center gap-3 w-full md:w-auto">
+                        <span className="text-sm font-medium text-slate-600">نطاق التحليل:</span>
+                        <select
+                          className="bg-slate-50 border border-slate-300 text-slate-900 text-sm rounded-lg focus:ring-emerald-500 focus:border-emerald-500 block w-full md:w-64 p-2.5 transition-shadow"
+                          value={selectedWilaya}
+                          onChange={(e) => setSelectedWilaya(e.target.value)}
+                        >
+                          <option value="ALL">كل الولايات (وطني)</option>
+                          {Object.keys(nationalStats.wilayas || {}).sort().map((w) => (
+                            <option key={w} value={w}>{w}</option>
+                          ))}
+                        </select>
                       </div>
-                    ))}
-                  </div>
-                </section>
-              </main>
 
-              <footer className="border-t border-slate-200 mt-12 py-6 bg-slate-50">
-                <div className="container mx-auto px-4 text-center">
-                  <p className="text-slate-500 text-xs font-mono">
-                    CONFIDENTIAL USE ONLY · DATA SOURCE: ALAHLIA.TN · PROCESSED BY BA7ATH
-                  </p>
-                </div>
-              </footer>
-            </>
-          } />
+                      <div className="flex gap-2">
+                        {selectedWilaya !== "ALL" && (
+                          <button
+                            onClick={handleResetView}
+                            className="px-4 py-2.5 rounded-lg text-sm font-medium bg-slate-100 text-slate-600 hover:bg-slate-200 transition-colors"
+                          >
+                            مسح الفلتر
+                          </button>
+                        )}
+                        <button
+                          onClick={() => setOpenRegion(selectedWilaya)}
+                          disabled={selectedWilaya === "ALL"}
+                          className={`flex items-center gap-2 px-5 py-2.5 rounded-lg text-sm font-medium transition-all ${selectedWilaya === "ALL"
+                            ? "bg-slate-100 text-slate-400 cursor-not-allowed border border-slate-200"
+                            : "bg-emerald-600 text-white hover:bg-emerald-500 hover:shadow-lg hover:shadow-emerald-200/50 active:translate-y-0.5"
+                            }`}
+                        >
+                          <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 19a2 2 0 01-2-2V7a2 2 0 012-2h4l2 2h4a2 2 0 012 2v1M5 19h14a2 2 0 002-2v-5a2 2 0 00-2-2H9a2 2 0 00-2 2v5a2 2 0 01-2 2z" />
+                          </svg>
+                          فتح الملف الجهوي
+                        </button>
+                      </div>
+                    </section>
 
-          {/* Enriched Companies Route */}
-          <Route path="/enriched" element={
-            <EnrichedCompaniesPage
-              onViewProfile={(company) => {
-                setEnrichedProfile(company);
-                setShowEnrichedModal(true);
+                    {/* Visualization Grid */}
+                    <section className="grid lg:grid-cols-12 gap-6 h-[600px] lg:h-[500px]">
+                      {/* Chart Section */}
+                      <div className="lg:col-span-7 bg-white border border-slate-200 rounded-2xl p-6 flex flex-col shadow-sm">
+                        <h3 className="text-lg font-semibold text-slate-800 mb-6 flex items-center gap-2">
+                          <svg className="w-5 h-5 text-emerald-500" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" /></svg>
+                          {chartConfig.title}
+                        </h3>
+                        <div className="flex-1 w-full relative">
+                          <Bar
+                            data={chartConfig.data}
+                            options={{
+                              responsive: true,
+                              maintainAspectRatio: false,
+                              plugins: { legend: { display: false } },
+                              scales: {
+                                x: { ticks: { color: "#64748b", font: { family: "sans-serif" } }, grid: { display: false } },
+                                y: { ticks: { color: "#64748b" }, grid: { color: "#e2e8f0" }, beginAtZero: true }
+                              },
+                              onClick: (e, els) => {
+                                if (els.length > 0) {
+                                  const idx = els[0].index;
+                                  const w = chartConfig.data.labels[idx];
+                                  if (nationalStats.wilayas[w]) setSelectedWilaya(w);
+                                }
+                              }
+                            }}
+                          />
+                        </div>
+                      </div>
+
+                      {/* Map Section */}
+                      <div className="lg:col-span-5 bg-white border border-slate-200 rounded-2xl p-1 overflow-hidden relative shadow-sm">
+                        <div className="absolute top-4 right-4 z-[400] bg-white/90 px-3 py-1 rounded text-xs text-slate-500 pointer-events-none border border-slate-200 shadow-sm">
+                          تفاعلي: اضغط على الولاية
+                        </div>
+                        <MapContainer
+                          center={TUNISIA_CENTER}
+                          zoom={6.5}
+                          className="w-full h-full rounded-xl bg-slate-100"
+                          zoomControl={true}
+                        >
+                          <TileLayer
+                            url="https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png"
+                            attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>'
+                          />
+                          <MapControls
+                            selectedWilaya={selectedWilaya}
+                            onReset={() => {
+                              setSelectedWilaya("ALL");
+                              setOpenRegion(null);
+                            }}
+                          />
+                          {Object.entries(nationalStats.wilayas || {}).map(([wilaya, count]) => {
+                            const coords = WILAYAS_COORDS[wilaya];
+                            if (!coords) return null;
+                            const isSelected = wilaya === selectedWilaya;
+                            return (
+                              <CircleMarker
+                                key={wilaya}
+                                center={coords}
+                                radius={Math.sqrt(count) * 4}
+                                pathOptions={{
+                                  color: isSelected ? "#2563EB" : "#10B981",
+                                  fillColor: isSelected ? "#3B82F6" : "#10B981",
+                                  fillOpacity: isSelected ? 0.8 : 0.4,
+                                  weight: isSelected ? 2 : 0
+                                }}
+                                eventHandlers={{
+                                  click: () => {
+                                    setSelectedWilaya(wilaya);
+                                    setOpenRegion(wilaya);
+                                  },
+                                }}
+                              >
+                                <LeafletTooltip direction="top" offset={[0, -10]} opacity={1} className="custom-tooltip">
+                                  <span className="font-bold">{wilaya}</span>: {count}
+                                </LeafletTooltip>
+                              </CircleMarker>
+                            );
+                          })}
+                        </MapContainer>
+                      </div>
+                    </section>
+
+                    {/* National Stats Grid */}
+                    <section>
+                      <div className="flex items-center gap-3 mb-4">
+                        <h2 className="text-xl font-bold text-slate-800">القطاعات الاقتصادية الكبرى</h2>
+                        <div className="h-px flex-1 bg-slate-200"></div>
+                      </div>
+
+                      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                        {nationalTopGroups.map(([code, value]) => (
+                          <div key={code} className="bg-white border border-slate-200 rounded-lg p-4 hover:border-emerald-200 hover:shadow-md transition-all group shadow-sm">
+                            <div className="flex justify-between items-start mb-2">
+                              <div className={`p-2 rounded-lg bg-${code === "AGRI_NATUREL" ? "emerald" : "slate"}-100`}>
+                                <span className="w-2 h-2 block rounded-full" style={{ backgroundColor: getActivityColor(code) }}></span>
+                              </div>
+                              <span className="text-2xl font-bold text-slate-800 group-hover:text-emerald-600 transition-colors">{value}</span>
+                            </div>
+                            <h4 className="text-sm font-medium text-slate-500 line-clamp-2 min-h-[40px]">
+                              {getGroupLabel(code)}
+                            </h4>
+                          </div>
+                        ))}
+                      </div>
+                    </section>
+                  </main>
+
+                  <footer className="border-t border-slate-200 mt-12 py-6 bg-slate-50">
+                    <div className="container mx-auto px-4 text-center">
+                      <p className="text-slate-500 text-xs font-mono">
+                        CONFIDENTIAL USE ONLY · DATA SOURCE: ALAHLIA.TN · PROCESSED BY BA7ATH
+                      </p>
+                    </div>
+                  </footer>
+                </>
+              } />
+
+              {/* Enriched Companies Route */}
+              <Route path="/enriched" element={
+                <EnrichedCompaniesPage
+                  onViewProfile={(company) => {
+                    setEnrichedProfile(company);
+                    setShowEnrichedModal(true);
+                  }}
+                />
+              } />
+            </Route>
+            <Route element={<ProtectedRoute adminOnly={true} />}>
+              <Route path="/admin" element={<AdminDashboard />} />
+            </Route>
+          </Routes>
+
+          <InvestigationWizard
+            isOpen={investigationOpen}
+            onClose={() => setInvestigationOpen(false)}
+            nationalStats={nationalStats}
+            allWilayasRisk={allWilayasRisk}
+          />
+
+          {/* Enriched Profile Modal */}
+          {showEnrichedModal && enrichedProfile && (
+            <EnrichedProfileModal
+              isOpen={showEnrichedModal}
+              profile={enrichedProfile}
+              onClose={() => {
+                setShowEnrichedModal(false);
+                setEnrichedProfile(null);
+              }}
+              onEdit={(profile) => {
+                setShowEnrichedModal(false);
+                setEditingFromModal({
+                  id: profile.company_id,
+                  name: profile.company_name,
+                  wilaya: profile.wilaya,
+                  existingData: profile
+                });
+                setEditWizardOpen(true);
               }}
             />
-          } />
-        </Routes>
+          )}
 
-        <InvestigationWizard
-          isOpen={investigationOpen}
-          onClose={() => setInvestigationOpen(false)}
-          nationalStats={nationalStats}
-          allWilayasRisk={allWilayasRisk}
-        />
+          {/* Edit Wizard from Modal */}
+          {editWizardOpen && editingFromModal && (
+            <ManualEnrichmentWizard
+              company={editingFromModal}
+              isOpen={editWizardOpen}
+              onClose={() => {
+                setEditWizardOpen(false);
+                setEditingFromModal(null);
+              }}
+              onComplete={() => {
+                setEditWizardOpen(false);
+                setEditingFromModal(null);
+              }}
+              editMode={true}
+              existingData={editingFromModal?.existingData}
+            />
+          )}
 
-        {/* Enriched Profile Modal */}
-        {showEnrichedModal && enrichedProfile && (
-          <EnrichedProfileModal
-            isOpen={showEnrichedModal}
-            profile={enrichedProfile}
-            onClose={() => {
-              setShowEnrichedModal(false);
-              setEnrichedProfile(null);
-            }}
-            onEdit={(profile) => {
-              setShowEnrichedModal(false);
-              setEditingFromModal({
-                id: profile.company_id,
-                name: profile.company_name,
-                wilaya: profile.wilaya,
-                existingData: profile
-              });
-              setEditWizardOpen(true);
-            }}
-          />
-        )}
+          {openRegion && (
+            <RegionPanel
+              wilaya={openRegion}
+              stats={nationalStats}
+              onClose={() => setOpenRegion(null)}
+              onResetView={handleResetView}
+            />
+          )}
 
-        {/* Edit Wizard from Modal */}
-        {editWizardOpen && editingFromModal && (
-          <ManualEnrichmentWizard
-            company={editingFromModal}
-            isOpen={editWizardOpen}
-            onClose={() => {
-              setEditWizardOpen(false);
-              setEditingFromModal(null);
-            }}
-            onComplete={() => {
-              setEditWizardOpen(false);
-              setEditingFromModal(null);
-            }}
-            editMode={true}
-            existingData={editingFromModal?.existingData}
-          />
-        )}
-
-        {openRegion && (
-          <RegionPanel
-            wilaya={openRegion}
-            stats={nationalStats}
-            onClose={() => setOpenRegion(null)}
-            onResetView={handleResetView}
-          />
-        )}
-
-        {/* Comparison Floating Button */}
-        <button
-          onClick={() => setComparisonMode(true)}
-          className="
+          {/* Comparison Floating Button */}
+          <button
+            onClick={() => setComparisonMode(true)}
+            className="
           fixed bottom-8 left-8 z-[1000]
           bg-gradient-to-r from-blue-500 to-purple-600
           text-white px-6 py-3 rounded-full
           shadow-2xl font-bold text-lg
           hover:scale-110 transition-transform flex items-center gap-2
         "
-        >
-          <span>📊</span> مقارنة الولايات
-          {selectedForComparison.length > 0 && (
-            <span className="bg-red-500 rounded-full px-2 py-0.5 text-xs text-white shadow-sm">
-              {selectedForComparison.length}
-            </span>
-          )}
-        </button>
+          >
+            <span>📊</span> مقارنة الولايات
+            {selectedForComparison.length > 0 && (
+              <span className="bg-red-500 rounded-full px-2 py-0.5 text-xs text-white shadow-sm">
+                {selectedForComparison.length}
+              </span>
+            )}
+          </button>
 
-        <MethodologyPanel
-          isOpen={methodologyOpen}
-          onClose={() => setMethodologyOpen(false)}
-        />
+          <MethodologyPanel
+            isOpen={methodologyOpen}
+            onClose={() => setMethodologyOpen(false)}
+          />
 
-        {/* Comparison Panel */}
-        <ComparisonPanel
-          isOpen={comparisonMode}
-          selectedWilayas={selectedForComparison}
-          onClose={() => setComparisonMode(false)}
-          onWilayaAdd={(name) => {
-            if (selectedForComparison.length < 4 && !selectedForComparison.includes(name)) {
-              setSelectedForComparison([...selectedForComparison, name]);
-            }
-          }}
-          onWilayaRemove={(name) => setSelectedForComparison(selectedForComparison.filter(w => w !== name))}
-        />
-      </div>
+          {/* Comparison Panel */}
+          <ComparisonPanel
+            isOpen={comparisonMode}
+            selectedWilayas={selectedForComparison}
+            onClose={() => setComparisonMode(false)}
+            onWilayaAdd={(name) => {
+              if (selectedForComparison.length < 4 && !selectedForComparison.includes(name)) {
+                setSelectedForComparison([...selectedForComparison, name]);
+              }
+            }}
+            onWilayaRemove={(name) => setSelectedForComparison(selectedForComparison.filter(w => w !== name))}
+          />
+        </div>
+      </AuthProvider>
     </BrowserRouter>
   );
 }

@@ -3,7 +3,10 @@ from fastapi.middleware.cors import CORSMiddleware
 from app.api.v1 import stats, companies, risk, meta
 from app.services.data_loader import load_data
 from app.database import engine, Base
-from app.models import enrichment_models  # Import models to register them with Base
+from app.models import enrichment_models, user_models # Import models to register them with Base
+from app.api.v1 import auth
+from app.services.auth_service import get_current_user
+from fastapi import Depends
 
 app = FastAPI(title="Ba7ath OSINT API", version="1.0.0")
 
@@ -32,13 +35,40 @@ async def startup_event():
     Base.metadata.create_all(bind=engine)
 
 # Routers
-app.include_router(stats.router, prefix="/api/v1/stats", tags=["Stats"])
-app.include_router(companies.router, prefix="/api/v1/companies", tags=["Companies"])
+app.include_router(auth.router, prefix="/api/v1/auth", tags=["Auth"])
+
+app.include_router(
+    stats.router, 
+    prefix="/api/v1/stats", 
+    tags=["Stats"], 
+    dependencies=[Depends(get_current_user)]
+)
+app.include_router(
+    companies.router, 
+    prefix="/api/v1/companies", 
+    tags=["Companies"], 
+    dependencies=[Depends(get_current_user)]
+)
 from app.api import enrichment
 
-app.include_router(risk.router, prefix="/api/v1/risk", tags=["Risk"])
-app.include_router(meta.router, prefix="/api/v1/meta", tags=["Meta"])
-app.include_router(enrichment.router, prefix="/api/v1/enrichment", tags=["Enrichment"])
+app.include_router(
+    risk.router, 
+    prefix="/api/v1/risk", 
+    tags=["Risk"], 
+    dependencies=[Depends(get_current_user)]
+)
+app.include_router(
+    meta.router, 
+    prefix="/api/v1/meta", 
+    tags=["Meta"], 
+    dependencies=[Depends(get_current_user)]
+)
+app.include_router(
+    enrichment.router, 
+    prefix="/api/v1/enrichment", 
+    tags=["Enrichment"], 
+    dependencies=[Depends(get_current_user)]
+)
 
 @app.get("/")
 def read_root():

@@ -2,14 +2,28 @@ import { API_BASE_URL } from './config';
 
 const API_URL = API_BASE_URL;
 
+const getAuthHeaders = () => {
+    const token = localStorage.getItem('token');
+    return token ? { 'Authorization': `Bearer ${token}` } : {};
+};
+
+const authenticatedFetch = async (url, options = {}) => {
+    const headers = {
+        'Content-Type': 'application/json',
+        ...getAuthHeaders(),
+        ...options.headers
+    };
+    return fetch(url, { ...options, headers });
+};
+
 export async function fetchNationalStats() {
-    const res = await fetch(`${API_URL}/stats/national`);
+    const res = await authenticatedFetch(`${API_URL}/stats/national`);
     if (!res.ok) throw new Error("Failed to fetch national stats");
     return res.json();
 }
 
 export async function fetchWilayaStats(wilaya) {
-    const res = await fetch(`${API_URL}/stats/wilayas/${encodeURIComponent(wilaya)}`);
+    const res = await authenticatedFetch(`${API_URL}/stats/wilayas/${encodeURIComponent(wilaya)}`);
     if (!res.ok) throw new Error("Failed to fetch wilaya stats");
     return res.json();
 }
@@ -22,25 +36,25 @@ export async function fetchCompanies(filters = {}) {
     if (filters.search) params.append("search", filters.search);
     if (filters.limit) params.append("limit", filters.limit);
 
-    const res = await fetch(`${API_URL}/companies/?${params.toString()}`);
+    const res = await authenticatedFetch(`${API_URL}/companies/?${params.toString()}`);
     if (!res.ok) throw new Error("Failed to fetch companies");
     return res.json();
 }
 
 export async function fetchWilayaRisk(wilaya) {
-    const res = await fetch(`${API_URL}/risk/wilayas/${encodeURIComponent(wilaya)}`);
+    const res = await authenticatedFetch(`${API_URL}/risk/wilayas/${encodeURIComponent(wilaya)}`);
     if (!res.ok) throw new Error("Failed to fetch wilaya risk");
     return res.json();
 }
 
 export async function fetchAllWilayasRisk() {
-    const res = await fetch(`${API_URL}/risk/wilayas`);
+    const res = await authenticatedFetch(`${API_URL}/risk/wilayas`);
     if (!res.ok) throw new Error("Failed to fetch risks");
     return res.json();
 }
 
 export async function fetchCompanyOsintLinks(companyId) {
-    const res = await fetch(`${API_URL}/companies/${companyId}/osint_links`);
+    const res = await authenticatedFetch(`${API_URL}/companies/${companyId}/osint_links`);
     if (!res.ok) throw new Error("Failed to fetch OSINT links");
     return res.json();
 }
@@ -50,11 +64,8 @@ export async function fetchCompanyOsintLinks(companyId) {
 export const saveEnrichment = async (data) => {
     try {
         console.log("Saving enrichment payload:", JSON.stringify(data, null, 2));
-        const res = await fetch(`${API_URL}/enrichment/manual`, {
+        const res = await authenticatedFetch(`${API_URL}/enrichment/manual`, {
             method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
             body: JSON.stringify(data),
         });
         if (!res.ok) {
@@ -71,7 +82,7 @@ export const saveEnrichment = async (data) => {
 
 export const getEnrichedProfile = async (companyId) => {
     try {
-        const res = await fetch(`${API_URL}/enrichment/profile/${companyId}`);
+        const res = await authenticatedFetch(`${API_URL}/enrichment/profile/${companyId}`);
         if (!res.ok) {
             if (res.status === 404) return null; // Not enriched yet
             throw new Error('Failed to fetch profile');
@@ -85,7 +96,7 @@ export const getEnrichedProfile = async (companyId) => {
 
 export const checkEnrichmentStatus = async (companyId) => {
     try {
-        const res = await fetch(`${API_URL}/enrichment/status/${companyId}`);
+        const res = await authenticatedFetch(`${API_URL}/enrichment/status/${companyId}`);
         if (!res.ok) throw new Error('Failed to check status');
         return await res.json();
     } catch (error) {
@@ -93,3 +104,41 @@ export const checkEnrichmentStatus = async (companyId) => {
         return { is_enriched: false };
     }
 };
+
+// --- User Management API (Admin) ---
+
+export const fetchUsers = async () => {
+    const res = await authenticatedFetch(`${API_URL}/auth/users`);
+    if (!res.ok) throw new Error('Failed to fetch users');
+    return res.json();
+};
+
+export const createUser = async (user) => {
+    const res = await authenticatedFetch(`${API_URL}/auth/users`, {
+        method: 'POST',
+        body: JSON.stringify(user)
+    });
+    if (!res.ok) {
+        const err = await res.json();
+        throw new Error(err.detail || 'Failed to create user');
+    }
+    return res.json();
+};
+
+export const updateUser = async (userId, data) => {
+    const res = await authenticatedFetch(`${API_URL}/auth/users/${userId}`, {
+        method: 'PATCH',
+        body: JSON.stringify(data)
+    });
+    if (!res.ok) throw new Error('Failed to update user');
+    return res.json();
+};
+
+export const deleteUser = async (userId) => {
+    const res = await authenticatedFetch(`${API_URL}/auth/users/${userId}`, {
+        method: 'DELETE'
+    });
+    if (!res.ok) throw new Error('Failed to delete user');
+    return true;
+};
+
