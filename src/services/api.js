@@ -1,4 +1,6 @@
-const API_URL = "http://localhost:8000/api/v1";
+import { API_BASE_URL } from './config';
+
+const API_URL = API_BASE_URL;
 
 export async function fetchNationalStats() {
     const res = await fetch(`${API_URL}/stats/national`);

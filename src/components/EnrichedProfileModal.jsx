@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
+import { API_BASE_URL } from '../services/config';
 
-const API_BASE = 'http://localhost:8000/api/v1/enrichment';
+const API_BASE = `${API_BASE_URL}/enrichment`;
 
 // --- Sub-components ---
 
