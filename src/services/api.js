@@ -142,3 +142,16 @@ export const deleteUser = async (userId) => {
     return true;
 };
 
+
+export async function fetchEnrichedCompanies(params) {
+    const query = new URLSearchParams(params).toString();
+    const res = await authenticatedFetch(`${API_URL}/enrichment/list?${query}`);
+    if (!res.ok) throw new Error("Failed to fetch enriched companies");
+    return res.json();
+}
+
+export async function fetchAllEnrichedWilayas() {
+    const res = await authenticatedFetch(`${API_URL}/enrichment/all`);
+    if (!res.ok) throw new Error("Failed to fetch enriched wilayas");
+    return res.json();
+}
