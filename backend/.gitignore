@@ -1,2 +1,14 @@
 venv/ 
 __pycache__/ 
+# Ignorer tout le dossier des scripts sensibles
+app/scripts/
+
+
+# Ignorer systématiquement les bases de données (Excel et CSV)
+*.xlsx
+*.csv
+
+# Ignorer les journaux de progression et fichiers temporaires
+ba7ath_progress.txt
+
+.env
