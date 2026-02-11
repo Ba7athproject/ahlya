@@ -10,5 +10,6 @@ app/scripts/
 
 # Ignorer les journaux de progression et fichiers temporaires
 ba7ath_progress.txt
-
+*.log
+*.txt
 .env
