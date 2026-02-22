@@ -2,17 +2,22 @@
 import csv
 import json
 import time
+import os
 from pathlib import Path
 
 import requests
+from dotenv import load_dotenv
+
+# Load environment variables
+load_dotenv()
 
 # ---------------- CONFIG ----------------
 
-OLLAMA_URL = "http://127.0.0.1:11434/api/chat"
-MODEL_NAME = "qwen2.5:latest"   # comme dans ollama list
+OLLAMA_URL = os.getenv("OLLAMA_URL", "http://127.0.0.1:11434/api/chat")
+MODEL_NAME = os.getenv("MODEL_NAME", "qwen2.5:latest")
 
-CSV_AR = Path("Ahlya_Total_Feuil1.csv")          # 1re colonne = nom AR
-CSV_FR = Path("trovit_charikat_ahliya_all.csv")  # 3e colonne = nom FR
+CSV_AR = Path(os.getenv("PATH_AHLYA_CSV", "Ahlya_Total_Feuil1.csv"))
+CSV_FR = Path(os.getenv("PATH_RNE_CSV", "trovit_charikat_ahliya_all.csv"))
 
 OUT_MATCHES = Path("matches_qwen.csv")
 OUT_NOT_IN_TROVIT = Path("not_in_trovit_qwen.csv")

@@ -4,8 +4,8 @@ echo   Starting Ba7ath Microsite Environment
 echo ==========================================
 
 REM 1. Start Backend Server
-echo [1/3] Launching Backend API (Port 8000)...
-start "Ba7ath Backend API" cmd /k "cd backend && call venv\Scripts\activate && uvicorn app.main:app --reload --port 8000"
+echo [1/3] Launching Backend API (Port 8010)...
+start "Ba7ath Backend API" cmd /k "cd backend && call venv\Scripts\activate && uvicorn app.main:app --reload --port 8010"
 
 REM Wait 3 seconds for backend to initialize
 timeout /t 3 >nul
@@ -23,7 +23,7 @@ start http://localhost:5173/enriched
 
 echo.
 echo All services started successfully!
-echo Backend:  http://localhost:8000/docs
+echo Backend:  http://localhost:8010/docs
 echo Frontend: http://localhost:5173
 echo.
 pause

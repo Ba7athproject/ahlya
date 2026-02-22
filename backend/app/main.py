@@ -1,75 +1,84 @@
-from fastapi import FastAPI
-from fastapi.middleware.cors import CORSMiddleware
+from dotenv import load_dotenv
+import os
+
+# Load environment variables as the very first step
+load_dotenv()
+
+from fastapi import FastAPI, Request, Depends
+from fastapi.responses import JSONResponse
+from starlette.middleware.cors import CORSMiddleware
 from app.api.v1 import stats, companies, risk, meta
 from app.services.data_loader import load_data
 from app.database import engine, Base
-from app.models import enrichment_models, user_models # Import models to register them with Base
+from app.models import enrichment_models, user_models
 from app.api.v1 import auth
 from app.services.auth_service import get_current_user
-from fastapi import Depends
 
 app = FastAPI(title="Ba7ath OSINT API", version="1.0.0")
 
-# CORS Configuration
-origins = [
-    "http://localhost:3000",
-    "http://localhost:5173", # Vite default
-    "http://127.0.0.1:5173",
-    "https://ahlya-investigations.vercel.app",  # frontend prod
-    "https://ahlya-production.up.railway.app", # backend prod
-]
-
+# ── CORS ──────────────────────────────────────────────────────────────
+# Starlette CORSMiddleware with allow_origins=["*"]
+# NOTE: When allow_origins=["*"], allow_credentials MUST be False.
+# The frontend sends the token in the Authorization header, NOT via cookies,
+# so allow_credentials=False is perfectly fine.
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=origins,
-    allow_credentials=True,
+    allow_origins=["*"],
+    allow_credentials=False,
     allow_methods=["*"],
     allow_headers=["*"],
 )
 
-# Startup Event
+
+# ── Startup ───────────────────────────────────────────────────────────
 @app.on_event("startup")
 async def startup_event():
+    print("=" * 60)
+    print("  Ba7ath OSINT API - VERSION CORS V4 (allow_origins=[*])")
+    print("=" * 60)
     load_data()
-    # Create SQLite tables if they don't exist
     Base.metadata.create_all(bind=engine)
 
-# Routers
+
+# ── Routers ───────────────────────────────────────────────────────────
 app.include_router(auth.router, prefix="/api/v1/auth", tags=["Auth"])
 
 app.include_router(
-    stats.router, 
-    prefix="/api/v1/stats", 
-    tags=["Stats"], 
-    dependencies=[Depends(get_current_user)]
+    stats.router,
+    prefix="/api/v1/stats",
+    tags=["Stats"],
+    dependencies=[Depends(get_current_user)],
 )
 app.include_router(
-    companies.router, 
-    prefix="/api/v1/companies", 
-    tags=["Companies"], 
-    dependencies=[Depends(get_current_user)]
+    companies.router,
+    prefix="/api/v1/companies",
+    tags=["Companies"],
+    dependencies=[Depends(get_current_user)],
 )
+
 from app.api import enrichment
 
 app.include_router(
-    risk.router, 
-    prefix="/api/v1/risk", 
-    tags=["Risk"], 
-    dependencies=[Depends(get_current_user)]
+    risk.router,
+    prefix="/api/v1/risk",
+    tags=["Risk"],
+    dependencies=[Depends(get_current_user)],
 )
 app.include_router(
-    meta.router, 
-    prefix="/api/v1/meta", 
-    tags=["Meta"], 
-    dependencies=[Depends(get_current_user)]
+    meta.router,
+    prefix="/api/v1/meta",
+    tags=["Meta"],
+    dependencies=[Depends(get_current_user)],
 )
 app.include_router(
-    enrichment.router, 
-    prefix="/api/v1/enrichment", 
-    tags=["Enrichment"], 
-    dependencies=[Depends(get_current_user)]
+    enrichment.router,
+    prefix="/api/v1/enrichment",
+    tags=["Enrichment"],
+    dependencies=[Depends(get_current_user)],
 )
+
 
 @app.get("/")
 def read_root():
-    return {"message": "Ba7ath OSINT API is running"}
+    return {"message": "Ba7ath OSINT API is running - VERSION CORS V4"}
+

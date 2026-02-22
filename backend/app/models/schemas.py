@@ -11,6 +11,28 @@ class Company(BaseModel):
     activity_raw: Optional[str] = None
     activity_normalized: Optional[str] = None
     activity_group: Optional[str] = None
+    
+    # Status / Match info
+    match_status: Optional[str] = "not_matched" # matched | partial | none
+    
+    # JORT Data
+    jort_ref: Optional[str] = None
+    jort_date: Optional[str] = None
+    jort_capital: Optional[float] = None
+    jort_text: Optional[str] = None
+    
+    # RNE/Trovit Data
+    rne_id: Optional[str] = None
+    rne_tax_id: Optional[str] = None
+    rne_rc_number: Optional[str] = None
+    rne_founding_date: Optional[str] = None
+    rne_capital: Optional[float] = None
+    rne_legal_form: Optional[str] = None
+    rne_address: Optional[str] = None
+    rne_detail_url: Optional[str] = None
+    
+    # Audit Flags
+    capital_divergence: Optional[bool] = False
 
 class CompanyWithLinks(Company):
     osint_links: Dict[str, str]
