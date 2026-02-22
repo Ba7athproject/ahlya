@@ -40,37 +40,9 @@ SYSTEM_PROMPT = """أنت خبير تدقيق محقق في مشروع 'بحث' 
 4. يجب أن يكون ملخص التحقيق (summary_ar) مهنيًا، مباشرًا، ومبنيًا فقط على الأدلة المقدمة.
 5. لا تضف نصوصًا تفسيرية خارج هيكل JSON المطلوب."""
 
-# ── JSON Output Schema ───────────────────────────────────────────────────
-
-OUTPUT_SCHEMA = {
-    "type": "object",
-    "properties": {
-        "match_score": {
-            "type": "integer",
-            "description": "Score de correspondance entre les sources (0-100)"
-        },
-        "status": {
-            "type": "string",
-            "enum": ["Verified", "Suspicious", "Conflict"],
-            "description": "Statut global de la vérification croisée"
-        },
-        "findings": {
-            "type": "array",
-            "items": {"type": "string"},
-            "description": "قائمة النقاط المتطابقة بين المصادر"
-        },
-        "red_flags": {
-            "type": "array",
-            "items": {"type": "string"},
-            "description": "قائمة التجاوزات أو الأخطاء المرصودة"
-        },
-        "summary_ar": {
-            "type": "string",
-            "description": "ملخص التحقيق باللغة العربية الرصينة"
-        }
-    },
-    "required": ["match_score", "status", "findings", "red_flags", "summary_ar"]
-}
+# ── JSON Schema (embedded in prompt, NOT in GenerationConfig) ────────────
+# NOTE: response_schema forces v1beta routing which causes 404 on Render.
+# We embed the schema in the prompt instead and only use response_mime_type.
 
 # ── Fallback response ────────────────────────────────────────────────────
 
@@ -115,13 +87,15 @@ class LLMAnalysisService:
                 system_instruction=SYSTEM_PROMPT
             )
             
-            # Définition de la configuration de génération (JSON Strict)
+            # Configuration de génération — JSON via v1 stable (pas v1beta)
+            # IMPORTANT: response_schema est volontairement ABSENT car il
+            # force le routage vers v1beta, qui renvoie 404 sur Render.
+            # Le schéma JSON est injecté directement dans le prompt.
             self.generation_config = genai.GenerationConfig(
                 temperature=0.0,
                 top_p=1,
                 top_k=1,
                 response_mime_type="application/json",
-                response_schema=OUTPUT_SCHEMA,
             )
             
             logger.info(f"✅ LLMAnalysisService initialized — model: {model_id}")
@@ -160,7 +134,15 @@ class LLMAnalysisService:
 1. قارن الاسم التجاري، رأس المال، والولاية.
 2. تحقق من تطابق التواريخ والمعرّف الجبائي.
 3. حدد أي تضاربات (Conflicts) أو نقاط مشبوهة.
-4. أجب بصيغة JSON فقط كما هو موضح في المخطط."""
+4. أجب بصيغة JSON فقط وفق المخطط التالي بالضبط:
+
+{{
+  "match_score": <عدد صحيح من 0 إلى 100>,
+  "status": "Verified" أو "Suspicious" أو "Conflict",
+  "findings": ["نقطة تطابق 1", "نقطة تطابق 2"],
+  "red_flags": ["تجاوز 1", "تجاوز 2"],
+  "summary_ar": "ملخص التحقيق هنا"
+}}"""
 
     async def analyze_cross_check(self, ahlya_data: dict, jort_data: dict, rne_data: dict) -> dict:
         """Exécute l'analyse croisée via Gemini avec gestion d'erreurs granulaire."""
