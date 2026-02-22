@@ -97,27 +97,34 @@ class LLMAnalysisService:
     """
 
     def __init__(self):
-        api_key = os.getenv("GEMINI_API_KEY")
-        if not api_key:
-            logger.warning("GEMINI_API_KEY not set — LLM analysis will be unavailable")
-            self.model = None
-            return
+            api_key = os.getenv("GEMINI_API_KEY")
+            if not api_key:
+                logger.warning("GEMINI_API_KEY not set — LLM analysis will be unavailable")
+                self.model = None
+                return
 
-        genai.configure(api_key=api_key)
+            try:
+                # Initialisation de l'API Google
+                genai.configure(api_key=api_key)
 
-        self.model = genai.GenerativeModel(
-            model_name="gemini-1.5-flash",
-            system_instruction=SYSTEM_PROMPT,
-            generation_config=genai.GenerationConfig(
-                temperature=0.0,
-                top_p=1,
-                top_k=1,
-                response_mime_type="application/json",
-                response_schema=OUTPUT_SCHEMA,
-            ),
-        )
-        logger.info("LLMAnalysisService initialized — model: gemini-1.5-flash (temp=0.0)")
-
+                # Utilisation du suffixe '-latest' pour garantir la compatibilité avec l'API v1
+                self.model = genai.GenerativeModel(
+                    model_name="gemini-1.5-flash-latest", # <--- Correctif ici
+                    system_instruction=SYSTEM_PROMPT,
+                    generation_config=genai.GenerationConfig(
+                        temperature=0.0,
+                        top_p=1,
+                        top_k=1,
+                        response_mime_type="application/json",
+                        response_schema=OUTPUT_SCHEMA,
+                    ),
+                )
+                logger.info("LLMAnalysisService initialized — model: gemini-1.5-flash-latest (temp=0.0)")
+                
+            except Exception as e:
+                logger.error(f"Failed to initialize Gemini Model: {str(e)}")
+                self.model = None
+                
     # ── Build the user prompt ────────────────────────────────────────────
 
     @staticmethod
