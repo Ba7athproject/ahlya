@@ -7,7 +7,7 @@ module.exports = {
   theme: {
     extend: {
       fontFamily: {
-        sans: ['"Noto Sans Arabic"', 'system-ui', 'sans-serif'],
+        sans: ['Inter', '"Noto Sans Arabic"', 'system-ui', 'sans-serif'],
       },
     },
   },

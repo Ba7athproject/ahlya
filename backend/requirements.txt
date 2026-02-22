@@ -59,3 +59,5 @@ uvicorn==0.40.0
 watchfiles==1.1.1
 websockets==16.0
 psycopg2-binary==2.9.10
+thefuzz==0.22.1
+python-Levenshtein==0.26.1

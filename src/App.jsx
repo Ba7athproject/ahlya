@@ -34,6 +34,7 @@ import CompanyOsintMenu from "./components/CompanyOsintMenu";
 import InvestigationWizard from "./components/InvestigationWizard";
 import EnrichedCompaniesPage from "./pages/EnrichedCompaniesPage";
 import EnrichedProfileModal from "./components/EnrichedProfileModal";
+import CompanyIntelligenceView from "./components/CompanyIntelligenceView";
 import ManualEnrichmentWizard from "./components/ManualEnrichmentWizard";
 import { AuthProvider } from "./context/AuthContext";
 import LoginPage from "./pages/LoginPage";
@@ -887,9 +888,9 @@ function App() {
             allWilayasRisk={allWilayasRisk}
           />
 
-          {/* Enriched Profile Modal */}
+          {/* Company Intelligence View (Cross-Reference) */}
           {showEnrichedModal && enrichedProfile && (
-            <EnrichedProfileModal
+            <CompanyIntelligenceView
               isOpen={showEnrichedModal}
               profile={enrichedProfile}
               onClose={() => {

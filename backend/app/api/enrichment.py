@@ -465,7 +465,7 @@ class WatchCompanyOut(BaseModel):
     updated_at: datetime
     
     class Config:
-        orm_mode = True
+        from_attributes = True
 
 class WatchCompanyUpdate(BaseModel):
     etat_enregistrement: Optional[str] = None
