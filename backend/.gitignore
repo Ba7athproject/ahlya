@@ -2,6 +2,7 @@ venv/
 __pycache__/ 
 # Ignorer tout le dossier des scripts sensibles
 app/scripts/
+force_admin.py
 
 
 # Ignorer systématiquement les bases de données (Excel et CSV)
@@ -13,3 +14,5 @@ ba7ath_progress.txt
 *.log
 *.txt
 .env
+.env.*
+../.env
