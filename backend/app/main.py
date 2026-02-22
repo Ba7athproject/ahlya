@@ -8,6 +8,7 @@ from fastapi import FastAPI, Request, Depends
 from fastapi.responses import JSONResponse
 from starlette.middleware.cors import CORSMiddleware
 from app.api.v1 import stats, companies, risk, meta
+from app.api.v1 import investigate as investigate_api
 from app.services.data_loader import load_data
 from app.database import engine, Base
 from app.models import enrichment_models, user_models
@@ -74,6 +75,12 @@ app.include_router(
     enrichment.router,
     prefix="/api/v1/enrichment",
     tags=["Enrichment"],
+    dependencies=[Depends(get_current_user)],
+)
+app.include_router(
+    investigate_api.router,
+    prefix="/api/v1/investigate",
+    tags=["Investigation"],
     dependencies=[Depends(get_current_user)],
 )
 
