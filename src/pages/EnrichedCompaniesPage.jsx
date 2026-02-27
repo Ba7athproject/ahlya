@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import ManualEnrichmentWizard from '../components/ManualEnrichmentWizard';
 import WatchlistView from '../components/WatchlistView';
@@ -26,6 +25,9 @@ const CompanyCard = ({ company, onViewProfile }) => {
     const redFlagCount = metrics?.red_flags?.length || 0;
     const contractsCount = data?.marches?.contracts?.length || 0;
     const capital = data?.rne?.capital_social || 0;
+    
+    // NOUVEAU : Récupération du nombre d'annonces JORT
+    const jortCount = data?.jort?.announcements?.length || 0;
 
     return (
         <div className="bg-white rounded-xl shadow-md border border-gray-100 overflow-hidden hover:shadow-lg transition-shadow">
@@ -46,6 +48,10 @@ const CompanyCard = ({ company, onViewProfile }) => {
                 <div className="flex flex-wrap gap-2 mb-4">
                     <MetricPill label="رأس المال" value={`${capital.toLocaleString()} د.ت`} color="blue" />
                     <MetricPill label="العقود" value={contractsCount} color="emerald" />
+                    
+                    {/* NOUVEAU : Pastille pour le JORT */}
+                    <MetricPill label="إعلانات JORT" value={jortCount} color="purple" />
+                    
                     {metrics?.capital_to_contracts_ratio > 10 && (
                         <MetricPill label="المؤشر" value={`${metrics.capital_to_contracts_ratio.toFixed(1)}x`} color="red" />
                     )}
@@ -203,19 +209,9 @@ const EnrichedCompaniesPage = ({ onViewProfile }) => {
 
                 if (wilayas.length === 0 && data.companies.length > 0) {
                     const uniqueWilayas = await fetchAllEnrichedWilayas();
-                    // API returns list of strings directly now based on my implementation in backend usually, 
-                    // or list of objects? 
-                    // Wait, `fetchAllEnrichedWilayas` calls `/enrichment/all` which returns `List[CompanyResponse]`.
-                    // The original code did: `const uniqueWilayas = [...new Set(allData.map(c => c.wilaya).filter(Boolean))];`
-                    // My new `fetchAllEnrichedWilayas` returns response.json().
-                    // So I should keep the mapping logic if the endpoint returns companies.
-
-                    // Let's check `backend/app/api/enrichment.py`... I don't see it open.
-                    // But `fetchAllEnrichedWilayas` in `api.js` calls `/enrichment/all`.
-                    // EnrichedCompaniesPage.jsx original: `const allData = await allResponse.json();`
-                    // So `data` from `fetchAllEnrichedWilayas` IS `allData`.
-
-                    const unique = [...new Set(uniqueWilayas.map(c => c.wilaya).filter(Boolean))];
+                    // On s'assure que map() ne plantera pas si l'API renvoie autre chose qu'un tableau
+                    const safeWilayasList = Array.isArray(uniqueWilayas) ? uniqueWilayas : [];
+                    const unique = [...new Set(safeWilayasList.map(c => c.wilaya).filter(Boolean))];
                     setWilayas(unique);
                 }
             } catch (error) {
